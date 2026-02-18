@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://beoy4log825e7"]
+
+[ext_resource type="Script" uid="uid://u38r6wreiwsv" path="res://Scenes/fuelbar.gd" id="1_tceav"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tceav"]
+bg_color = Color(0.09366939, 0.09366939, 0.09366933, 1)
+border_color = Color(0, 0, 0, 0.6039216)
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+shadow_color = Color(0, 0, 0, 0.27450982)
+shadow_offset = Vector2(0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pgyy4"]
+bg_color = Color(0.7525821, 0.7525822, 0.75258195, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jwx8l"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ao1ll"]
+bg_color = Color(0.5137255, 0.46666667, 0.16470589, 1)
+
+[node name="Fuelbar" type="ProgressBar" unique_id=213535581]
+z_index = -1
+offset_left = 42.0
+offset_top = 24.0
+offset_right = 282.0
+offset_bottom = 28.0
+theme_override_styles/background = SubResource("StyleBoxFlat_tceav")
+theme_override_styles/fill = SubResource("StyleBoxFlat_pgyy4")
+max_value = 2.0
+value = 2.0
+show_percentage = false
+script = ExtResource("1_tceav")
+
+[node name="EmptyBar" type="ProgressBar" parent="." unique_id=551243528]
+z_index = 1
+layout_mode = 0
+offset_right = 240.0
+offset_bottom = 4.0
+theme_override_styles/background = SubResource("StyleBoxEmpty_jwx8l")
+theme_override_styles/fill = SubResource("StyleBoxFlat_ao1ll")
+max_value = 2.0
+value = 1.0
+show_percentage = false
+
+[node name="Timer" type="Timer" parent="." unique_id=697501024]
+wait_time = 3.0
+one_shot = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

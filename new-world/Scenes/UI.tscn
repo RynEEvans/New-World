@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://bx4vgb1cr54is"]
+
+[ext_resource type="Script" uid="uid://u38r6wreiwsv" path="res://Scenes/fuelbar.gd" id="1_w371h"]
+
+[node name="CanvasLayer" type="CanvasLayer" unique_id=986715482]
+
+[node name="jetfuel_bar" type="ProgressBar" parent="." unique_id=278939915]
+offset_left = 86.0
+offset_top = 24.0
+offset_right = 118.19177
+offset_bottom = 51.0
+scale = Vector2(2.92, 2.92)
+value = 100.0
+script = ExtResource("1_w371h")
+
+[node name="jetfuel_timer" type="Timer" parent="jetfuel_bar" unique_id=872632172]
