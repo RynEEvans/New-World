@@ -2,7 +2,7 @@ extends CharacterBody2D
 
 
 @export var walk_speed : float = 200.0
-@export var jump_velocity : float = -200.0
+@export var jump_velocity : float = -250.0
 @export var double_jump_velocity : float = -100.0
 @export var dash_speed : float = 2000.0
 @export var player_gravity : float = 1
@@ -54,7 +54,7 @@ func _physics_process(delta: float) -> void:
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	direction = Input.get_vector("left", "right", "up", "down")
-	if direction && animated_sprite.animation != "JumpEnd" && movement_locked == false:
+	if direction && movement_locked == false:
 		if dashing == true:
 			dash()
 		else:
@@ -85,9 +85,11 @@ func update_facing_direction():
 		animated_sprite.flip_h = true
 
 func jump():
+	$jump_height_timer.start()
 	velocity.y = jump_velocity
 	animated_sprite.play("JumpStart")
 	animation_locked = true
+	print($jump_height_timer.time_left)
 	
 func double_jump():
 	velocity.y = double_jump_velocity * 3
@@ -124,45 +126,28 @@ func add_jetfuel():
 
 func remove_jetfuel():
 	jetpack_fuel = jetpack_fuel - 1
-	print("jetfuel removed")
-	print(jetpack_fuel)
 	_set_jetfuel(jetpack_fuel)
 	check_jetfuel()
 	if(jetpack_fuel == 1): 
-		print("I lowkey wanna crack Domina")
 		$fuel_timer1.start()
 	else:
-		print("zooweemama")
 		$fuel_timer2.start()
 		if($fuel_timer1.time_left == 0):
-			print("highkey ")
 			$fuel_timer1.start()
-			print("timer 1 started on domina")
 
 func check_jetfuel():
-	print("checking fuel")
 	if(jetpack_fuel != max_fuel):
-		print("dog")
 		if(jetpack_fuel == 1):
-			print("cat")
 			if ($fuel_timer1.time_left == 0):
-				print("bird")
 				$fuel_timer1.start()
-				print("timer 1 start")
 			else:
-				print("fish")
 				pass
 		elif (jetpack_fuel == 0):
-			print("red")
-			if($fuel_timer2.time_left == 0):
-				("blue")
+			if($fuel_timer2.time_left != 0):
 				$fuel_timer2.start()
-				print("timer 2  start")
 			else:
-				print("yellow")
 				pass
 		if(jetpack_fuel > 2):
-			print("reddog")
 			jetpack_fuel = 2
 			_set_jetfuel(jetpack_fuel)
 	
@@ -178,13 +163,23 @@ func _on_dash_timer_timeout() -> void:
 
 func _on_fuel_timer_1_timeout() -> void:
 	add_jetfuel()
-	print("Jetfuel Added on 1")
-	print(jetpack_fuel)
 	check_jetfuel()
 	
 
 func _on_fuel_timer_2_timeout() -> void:
 	add_jetfuel()
-	print("Jetfuel Added on 2")
-	print(jetpack_fuel)
 	check_jetfuel()
+
+
+func _on_jump_height_timer_timeout() -> void:
+	if !(Input.is_action_pressed("jump")):
+		if (velocity.y < -75):
+			velocity.y = 75
+	else:
+		print("High Jump")
+
+func killPlayer():
+	position = %RespawnPoint.position
+
+func _on_area_2d_body_entered(body: Node2D) -> void:
+	killPlayer()
