@@ -44,23 +44,13 @@ func _physics_process(delta: float) -> void:
 		elif jetpack_fuel != 0:
 			#Double Jump in the Air
 			double_jump()
-			jetpack_fuel = jetpack_fuel - 1
-			_set_jetfuel(jetpack_fuel)
-			if(jetpack_fuel == 1):
-				$fuel_timer1.start()
-			else:
-				$fuel_timer2.start()
+			remove_jetfuel()
 
 	#Handle Dash
 	if Input.is_action_just_pressed("dash") && jetpack_fuel != 0:
 		dashing = true
 		dash()
-		jetpack_fuel = jetpack_fuel - 1
-		_set_jetfuel(jetpack_fuel)
-		if(jetpack_fuel == 1):
-			$fuel_timer1.start()
-		else:
-			$fuel_timer2.start()
+		remove_jetfuel()
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	direction = Input.get_vector("left", "right", "up", "down")
@@ -127,19 +117,52 @@ func land():
  
 func _set_jetfuel(value):
 	fuelbar._set_jetfuel(value)
-	
+
+func add_jetfuel():
+	jetpack_fuel = jetpack_fuel + 1
+	_set_jetfuel(jetpack_fuel)
+
+func remove_jetfuel():
+	jetpack_fuel = jetpack_fuel - 1
+	print("jetfuel removed")
+	print(jetpack_fuel)
+	_set_jetfuel(jetpack_fuel)
+	check_jetfuel()
+	if(jetpack_fuel == 1): 
+		print("I lowkey wanna crack Domina")
+		$fuel_timer1.start()
+	else:
+		print("zooweemama")
+		$fuel_timer2.start()
+		if($fuel_timer1.time_left == 0):
+			print("highkey ")
+			$fuel_timer1.start()
+			print("timer 1 started on domina")
+
 func check_jetfuel():
+	print("checking fuel")
 	if(jetpack_fuel != max_fuel):
+		print("dog")
 		if(jetpack_fuel == 1):
-			if ($fuel_timer1.time_left < 0):
+			print("cat")
+			if ($fuel_timer1.time_left == 0):
+				print("bird")
 				$fuel_timer1.start()
+				print("timer 1 start")
 			else:
+				print("fish")
 				pass
-		elif ($fuel_timer2.time_left < 0):
-			$fuel_timer2.start()
-		else:
-			pass
+		elif (jetpack_fuel == 0):
+			print("red")
+			if($fuel_timer2.time_left == 0):
+				("blue")
+				$fuel_timer2.start()
+				print("timer 2  start")
+			else:
+				print("yellow")
+				pass
 		if(jetpack_fuel > 2):
+			print("reddog")
 			jetpack_fuel = 2
 			_set_jetfuel(jetpack_fuel)
 	
@@ -154,15 +177,14 @@ func _on_dash_timer_timeout() -> void:
 	movement_locked = false
 
 func _on_fuel_timer_1_timeout() -> void:
-	jetpack_fuel = jetpack_fuel + 1
-	_set_jetfuel(jetpack_fuel)
+	add_jetfuel()
+	print("Jetfuel Added on 1")
+	print(jetpack_fuel)
 	check_jetfuel()
-	if(jetpack_fuel > 2):
-		jetpack_fuel = 2
-		_set_jetfuel(jetpack_fuel)
 	
 
 func _on_fuel_timer_2_timeout() -> void:
-	jetpack_fuel = jetpack_fuel + 1
-	_set_jetfuel(jetpack_fuel)
+	add_jetfuel()
+	print("Jetfuel Added on 2")
+	print(jetpack_fuel)
 	check_jetfuel()
