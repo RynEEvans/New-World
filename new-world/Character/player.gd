@@ -5,12 +5,14 @@ extends CharacterBody2D
 @export var jump_velocity : float = -200.0
 @export var double_jump_velocity : float = -100.0
 @export var dash_speed : float = 2000.0
+@export var player_gravity : float = 1
 
 @onready var animated_sprite : AnimatedSprite2D = $AnimatedSprite2D
 @onready var fuelbar = $CanvasLayer/Fuelbar
 
 var has_double_jumped : bool = false
 var jetpack_fuel : int = 2
+var max_fuel : int = 2
 var animation_locked : bool = false
 var movement_locked : bool = false
 var direction : Vector2 = Vector2.ZERO
@@ -25,7 +27,7 @@ func _ready():
 func _physics_process(delta: float) -> void:
 	# Add the gravity.
 	if not is_on_floor():
-		velocity += get_gravity() * delta
+		velocity += get_gravity() * delta * player_gravity
 		was_in_air = true
 	else:
 		has_double_jumped = false
@@ -98,7 +100,7 @@ func jump():
 	animation_locked = true
 	
 func double_jump():
-	velocity.y = double_jump_velocity
+	velocity.y = double_jump_velocity * 3
 	animated_sprite.play("JumpDouble")	
 	animation_locked = true
 	has_double_jumped = true
@@ -125,6 +127,22 @@ func land():
  
 func _set_jetfuel(value):
 	fuelbar._set_jetfuel(value)
+	
+func check_jetfuel():
+	if(jetpack_fuel != max_fuel):
+		if(jetpack_fuel == 1):
+			if ($fuel_timer1.time_left < 0):
+				$fuel_timer1.start()
+			else:
+				pass
+		elif ($fuel_timer2.time_left < 0):
+			$fuel_timer2.start()
+		else:
+			pass
+		if(jetpack_fuel > 2):
+			jetpack_fuel = 2
+			_set_jetfuel(jetpack_fuel)
+	
 
 func _on_animated_sprite_2d_animation_finished() -> void:
 	if(["JumpEnd","JumpStart","JumpDouble","Dash"].has(animated_sprite.animation)):
@@ -138,7 +156,13 @@ func _on_dash_timer_timeout() -> void:
 func _on_fuel_timer_1_timeout() -> void:
 	jetpack_fuel = jetpack_fuel + 1
 	_set_jetfuel(jetpack_fuel)
+	check_jetfuel()
+	if(jetpack_fuel > 2):
+		jetpack_fuel = 2
+		_set_jetfuel(jetpack_fuel)
+	
 
 func _on_fuel_timer_2_timeout() -> void:
 	jetpack_fuel = jetpack_fuel + 1
 	_set_jetfuel(jetpack_fuel)
+	check_jetfuel()
