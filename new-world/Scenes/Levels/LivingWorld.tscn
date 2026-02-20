@@ -253,7 +253,6 @@ limit_top = -300
 limit_bottom = 100
 limit_smoothed = true
 position_smoothing_enabled = true
-drag_horizontal_enabled = true
 drag_vertical_enabled = true
 
 [node name="RemoteTransform2D" type="RemoteTransform2D" parent="Player" unique_id=1982920193]
@@ -316,6 +315,6 @@ position = Vector2(1936, -130)
 rotation = 3.1184623
 
 [node name="Gulper" parent="." unique_id=1875687699 instance=ExtResource("8_6c7jm")]
-position = Vector2(1157, -29)
+position = Vector2(1158, -27)
 
 [connection signal="body_entered" from="Area2D" to="Player" method="_on_area_2d_body_entered"]
