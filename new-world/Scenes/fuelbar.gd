@@ -1,22 +1,12 @@
-extends ProgressBar
+extends AnimatedSprite2D
 
-@onready var timer = $Timer
-@onready var EmptyBar = $EmptyBar
+@onready var tank_sprite : AnimatedSprite2D = $AnimatedSprite2D
 
 var jetfuel = 2
 
 func _set_jetfuel(new_jetfuel):
-	var prev_jetfuel = jetfuel
-	jetfuel = min(max_value, new_jetfuel)
-	EmptyBar.value = jetfuel
-	
-	if jetfuel < prev_jetfuel:
-		EmptyBar.value = jetfuel
-		timer.start()
+	pass
 
 func init_jetfuel(_jetfuel):
 	jetfuel = _jetfuel
-	max_value = jetfuel
-	value = jetfuel
-	EmptyBar.max_value = jetfuel
-	EmptyBar.value = jetfuel
+	tank_sprite.play("tankFull")

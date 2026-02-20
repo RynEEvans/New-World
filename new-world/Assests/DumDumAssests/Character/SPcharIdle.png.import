@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b5uerqtpls60q"
-path="res://.godot/imported/LWStillBackground.png-ff200ba7c1b610f17138abdc02999158.ctex"
+uid="uid://gyfopstqg5ty"
+path="res://.godot/imported/SPcharIdle.png-2176de8d446dfd0b99eaf14f7ef5f483.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assests/DumDumAssests/OtherStuff/LWStillBackground.png"
-dest_files=["res://.godot/imported/LWStillBackground.png-ff200ba7c1b610f17138abdc02999158.ctex"]
+source_file="res://Assests/DumDumAssests/Character/SPcharIdle.png"
+dest_files=["res://.godot/imported/SPcharIdle.png-2176de8d446dfd0b99eaf14f7ef5f483.ctex"]
 
 [params]
 

@@ -8,7 +8,7 @@ extends CharacterBody2D
 @export var player_gravity : float = 1
 
 @onready var animated_sprite : AnimatedSprite2D = $AnimatedSprite2D
-@onready var fuelbar = $CanvasLayer/Fuelbar
+@onready var fuelbar = $CanvasLayer/FuelBar
 
 var has_double_jumped : bool = false
 var jetpack_fuel : int = 2
@@ -22,7 +22,8 @@ var dashDirection = Vector2(1,0)
 
 func _ready():
 	jetpack_fuel = 2
-	fuelbar.init_jetfuel(jetpack_fuel)
+	#fuelbar.init_jetfuel(jetpack_fuel)
+	fuelbar.play("tankFull")
 
 func _physics_process(delta: float) -> void:
 	# Add the gravity.
@@ -118,7 +119,12 @@ func land():
 	animation_locked = true
  
 func _set_jetfuel(value):
-	fuelbar._set_jetfuel(value)
+	if(jetpack_fuel == 0):
+		fuelbar.play("tankEmpty")
+	elif(jetpack_fuel == 1):
+		fuelbar.play("tankHalf")
+	elif(jetpack_fuel == 2):
+		fuelbar.play("tankFull")
 
 func add_jetfuel():
 	jetpack_fuel = jetpack_fuel + 1
