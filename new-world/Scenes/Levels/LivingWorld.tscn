@@ -4,9 +4,10 @@
 [ext_resource type="PackedScene" uid="uid://di432bbncxq6p" path="res://Character/player.tscn" id="2_wfklx"]
 [ext_resource type="Texture2D" uid="uid://ffkcm4u6g3c7" path="res://Assests/DumDumAssests/Background/LWStillBackground4.png" id="3_r2g7h"]
 [ext_resource type="Texture2D" uid="uid://b2y8qhmdj7482" path="res://Assests/DumDumAssests/Background/LWMovingBackground.png" id="4_6c7jm"]
-[ext_resource type="Texture2D" uid="uid://dgeb5ngj3eyc" path="res://Assests/DumDumAssests/Enemies/gulper.png" id="4_wrmdj"]
 [ext_resource type="Texture2D" uid="uid://dxwiee86br5v" path="res://Assests/DumDumAssests/Devs/kab.png" id="6_6c7jm"]
+[ext_resource type="PackedScene" uid="uid://dj4lqxemu1hnv" path="res://Assests/DumDumAssests/Enemies/ceiling_gulper.tscn" id="7_6c7jm"]
 [ext_resource type="Texture2D" uid="uid://gyfopstqg5ty" path="res://Assests/DumDumAssests/Character/SPcharIdle.png" id="7_r2g7h"]
+[ext_resource type="PackedScene" uid="uid://dv7xthehh4eah" path="res://Assests/DumDumAssests/Enemies/gulper.tscn" id="8_6c7jm"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wrmdj"]
 texture = ExtResource("1_ckkhf")
@@ -242,7 +243,7 @@ shape = SubResource("WorldBoundaryShape2D_r2g7h")
 [node name="Player" parent="." unique_id=1945334938 instance=ExtResource("2_wfklx")]
 z_index = 2
 z_as_relative = false
-position = Vector2(-30, -53)
+position = Vector2(-1, -51)
 floor_stop_on_slope = false
 floor_snap_length = 10.1
 
@@ -290,17 +291,6 @@ offset_bottom = 361.0
 scale = Vector2(0.78267556, 0.78267556)
 texture = ExtResource("4_6c7jm")
 
-[node name="Gulper" type="Sprite2D" parent="." unique_id=111869652]
-z_index = 2
-position = Vector2(1155, -23)
-texture = ExtResource("4_wrmdj")
-
-[node name="Gulper2" type="Sprite2D" parent="." unique_id=1770907446]
-z_index = 2
-position = Vector2(1916.9999, -142)
-rotation = 3.1362681
-texture = ExtResource("4_wrmdj")
-
 [node name="Kab" type="Sprite2D" parent="." unique_id=1192333929]
 visible = false
 z_index = 2
@@ -320,5 +310,12 @@ frame_progress = 0.19742665
 stream = SubResource("AudioStreamMP3_r2g7h")
 autoplay = true
 playback_type = 1
+
+[node name="CeilGulper" parent="." unique_id=1240666865 instance=ExtResource("7_6c7jm")]
+position = Vector2(1936, -130)
+rotation = 3.1184623
+
+[node name="Gulper" parent="." unique_id=1875687699 instance=ExtResource("8_6c7jm")]
+position = Vector2(1157, -29)
 
 [connection signal="body_entered" from="Area2D" to="Player" method="_on_area_2d_body_entered"]

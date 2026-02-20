@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://dj4lqxemu1hnv"]
+
+[ext_resource type="PackedScene" uid="uid://dv7xthehh4eah" path="res://Assests/DumDumAssests/Enemies/gulper.tscn" id="1_3kdl0"]
+[ext_resource type="Script" uid="uid://cx04gd46a8xhl" path="res://Assests/DumDumAssests/Enemies/ceiling_gulper.gd" id="2_cet0p"]
+
+[node name="Gulper" unique_id=1240666865 instance=ExtResource("1_3kdl0")]
+rotation = 3.1415927
+script = ExtResource("2_cet0p")

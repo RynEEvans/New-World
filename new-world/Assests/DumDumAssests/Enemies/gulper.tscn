@@ -1,0 +1,100 @@
+[gd_scene format=3 uid="uid://dv7xthehh4eah"]
+
+[ext_resource type="Script" uid="uid://ba1bog8gjo4ah" path="res://Assests/DumDumAssests/Enemies/gulper.gd" id="1_ldw6m"]
+[ext_resource type="Texture2D" uid="uid://bnuvkjf185y1v" path="res://Assests/DumDumAssests/Enemies/gulperIdle.png" id="1_pout5"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ldw6m"]
+atlas = ExtResource("1_pout5")
+region = Rect2(0, 0, 80, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hkuac"]
+atlas = ExtResource("1_pout5")
+region = Rect2(80, 0, 80, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0laho"]
+atlas = ExtResource("1_pout5")
+region = Rect2(160, 0, 80, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jh3tt"]
+atlas = ExtResource("1_pout5")
+region = Rect2(240, 0, 80, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_67337"]
+atlas = ExtResource("1_pout5")
+region = Rect2(320, 0, 80, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mipk3"]
+atlas = ExtResource("1_pout5")
+region = Rect2(400, 0, 80, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3w3rx"]
+atlas = ExtResource("1_pout5")
+region = Rect2(480, 0, 80, 80)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_hxu7c"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ldw6m")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hkuac")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0laho")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jh3tt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_67337")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mipk3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3w3rx")
+}],
+"loop": true,
+"name": &"Idle",
+"speed": 5.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hkuac"]
+radius = 7.700475
+height = 38.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ldw6m"]
+size = Vector2(54, 7)
+
+[node name="Gulper" type="CharacterBody2D" unique_id=1240666865]
+script = ExtResource("1_ldw6m")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2127023239]
+sprite_frames = SubResource("SpriteFrames_hxu7c")
+animation = &"Idle"
+autoplay = "Idle"
+frame_progress = 0.710009
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1501994884]
+position = Vector2(0, 4)
+scale = Vector2(3.7660012, -1.2696522)
+shape = SubResource("CapsuleShape2D_hkuac")
+
+[node name="ray_timer" type="Timer" parent="." unique_id=66492121]
+
+[node name="direction_timer" type="Timer" parent="." unique_id=521888903]
+autostart = true
+
+[node name="Base" type="CollisionShape2D" parent="." unique_id=2098673208]
+position = Vector2(-1, 36.5)
+shape = SubResource("RectangleShape2D_ldw6m")
+
+[node name="LeftCast" type="RayCast2D" parent="." unique_id=1866968339]
+target_position = Vector2(-32, 41)
+
+[node name="RightCast" type="RayCast2D" parent="." unique_id=420705644]
+target_position = Vector2(31, 42)
+
+[connection signal="timeout" from="ray_timer" to="." method="_on_ray_timer_timeout"]
+[connection signal="timeout" from="direction_timer" to="." method="_on_direction_timer_timeout"]
