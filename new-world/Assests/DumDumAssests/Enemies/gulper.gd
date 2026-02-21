@@ -6,8 +6,10 @@ class_name GulperEnemy
 @onready var Lray = $LeftCast
 @onready var Rray = $RightCast
 @onready var wall_ray = $wall_detection
-@onready var for_lunge_detection = $ForwardLunge
-@onready var for_lunge_hitbox = $HeadHitBox/AnimationPlayer
+@onready var l_lunge_direction = $LeftLunge
+@onready var lunge_detection = $HeadHitBox/AnimationPlayer
+@onready var turn_around = $TurnAround
+@onready var u_lunge_detection = $UpLunge
 @onready var player_node = %Player
 const speed = 30
 var gulp_is_chase : bool
@@ -25,7 +27,7 @@ var ray_trigger : bool
 
 var dir : Vector2
 const gravity = 490
-var knockback_force = 200
+var knockback_force = 500
 var is_roaming : bool = true
 var motion_locked : bool = false
 var hit_wall : bool = false
@@ -57,13 +59,15 @@ func update_facing_direction():
 		dir = Vector2(1,0)
 		animated_sprite.flip_h = true
 		animated_sprite.offset = Vector2(70.0,0)
-		for_lunge_detection.position = Vector2(35.0,0)
+		l_lunge_direction.position = Vector2(70.0,0)
+		turn_around.position = Vector2.ZERO
 		wall_ray.target_position = Vector2(37,0)
 	elif dir.x < 0:
 		dir = Vector2(-1,0)
 		animated_sprite.flip_h = false
 		animated_sprite.offset = Vector2.ZERO
-		for_lunge_detection.position = Vector2.ZERO
+		l_lunge_direction.position = Vector2.ZERO
+		turn_around.position = Vector2(68,0)
 		wall_ray.target_position = Vector2(-37,0)
 
 func move(delta):
@@ -80,13 +84,22 @@ func choose(array):
 	array.shuffle()
 	return array.front()
 
-func forward_lunge(body: Node2D):
+func forward_lunge():
 	if (can_lunge == true):
+		can_lunge = false
 		velocity.x = 0
 		motion_locked = true
 		animated_sprite.play("Charge")
-		current_body = body
-		$charge_time.start()
+		$left_charge_time.start()
+		$lunge_cooldown.start()
+
+func upward_lunge():
+	if (can_lunge == true):
+		can_lunge = false
+		velocity.x = 0
+		motion_locked = true
+		animated_sprite.play("Charge")
+		$up_charge_time.start()
 		$lunge_cooldown.start()
 
 func check_for_wall():
@@ -103,24 +116,13 @@ func _on_direction_timer_timeout() -> void:
 func _on_ray_timer_timeout() -> void:
 	ray_trigger = false
 
-func _on_forward_lunge_body_entered(body: Node2D) -> void:
-	forward_lunge(body)
 
-func _on_head_hit_box_body_entered(body: Node2D) -> void:
-	print("goteeeeeem")
-	if(current_body == player_node):
-		print("KNOCKBACK")
-		var knockback_position = Vector2(global_position.x, (global_position.y -25))
-		var knockback_direction = (current_body.global_position - knockback_position).normalized()
-		current_body.apply_knockback(knockback_direction, 350.0, 0.25)
-
-
-func _on_charge_time_timeout() -> void:
+func _on_left_charge_time_timeout() -> void:
 	animated_sprite.play("ForwardLunge")
 	if(animated_sprite.flip_h == false):
-		for_lunge_hitbox.play("left_lunge")
+		lunge_detection.play("left_lunge")
 	else:
-		for_lunge_hitbox.play("right_lunge")
+		lunge_detection.play("right_lunge")
 	
 	
 	$move_timer.start()
@@ -136,3 +138,30 @@ func _on_wall_timer_timeout() -> void:
 
 func _on_lunge_cooldown_timeout() -> void:
 	can_lunge = true
+
+
+func _on_turn_around_body_entered(body: Node2D) -> void:
+	dir *= -1
+	forward_lunge()
+
+
+func _on_up_lunge_body_entered(body: Node2D) -> void:
+	upward_lunge()
+
+
+func _on_up_charge_time_timeout() -> void:
+	velocity.x = 0
+	$Node2D.offset = Vector2(-117,-120)
+	animated_sprite.play("UpwardLunge")
+	lunge_detection.play("up_lunge")
+	
+	
+	$move_timer.start()
+
+
+func _on_left_lunge_body_entered(body: Node2D) -> void:
+	forward_lunge()
+
+
+func _on_head_hit_box_body_entered(body: Node2D) -> void:
+	body.knockback = position.direction_to(body.position) * knockback_force

@@ -9,6 +9,8 @@ extends CharacterBody2D
 
 @onready var animated_sprite : AnimatedSprite2D = $AnimatedSprite2D
 @onready var fuelbar = $CanvasLayer/FuelBar
+@onready var main = get_tree().get_root().get_node(".")
+@onready var bullet = load("res://Character/bullet.tscn")
 
 var has_double_jumped : bool = false
 var jetpack_fuel : int = 2
@@ -22,20 +24,32 @@ var dashDirection = Vector2(1,0)
 var was_on_floor = is_on_floor()
 var can_coyote_jump : bool = false
 var jump_buffered : bool = false
-var knockback: Vector2 = Vector2.ZERO
-var knockback_timer : float = 0.0
+var knockback: Vector2
+var min_knockback := 100
+var slow_knockback := 1.1
+
+#Gun Stuff
+var spawnPos : Vector2
+var spawnRot : float
+var can_shoot: bool = true
+@export var mag_size : int = 10
+var max_mag_size : int = 10
 
 func _ready():
 	jetpack_fuel = 2
 	#fuelbar.init_jetfuel(jetpack_fuel)
 	fuelbar.play("tankFull")
+	
 
-func _physics_process(delta: float) -> void:
-	if knockback_timer > 0.0:
-		velocity = knockback
-		knockback_timer -= delta
-		if knockback_timer <= 0.0:
-			knockback = Vector2.ZERO
+func _physics_process(delta: float):
+	if knockback.length() > min_knockback:
+		knockback /= slow_knockback
+		if is_on_floor():
+			velocity = Vector2(knockback.x, -500)
+		else:
+			velocity = knockback
+		move_and_slide()
+		return
 	
 	# Add the gravity.
 	if not is_on_floor() && can_coyote_jump == false:
@@ -102,6 +116,8 @@ func _physics_process(delta: float) -> void:
 
 
 func update_animation():
+	if(Input.is_action_pressed("shoot")):
+		shoot()
 	if not animation_locked:
 		if not is_on_floor():
 			animated_sprite.play("ExploJumpLoop")
@@ -109,7 +125,11 @@ func update_animation():
 			if direction.x != 0:
 				animated_sprite.play("ExploRun")
 			else:
-				animated_sprite.play("ExploIdle")
+				if(Input.is_action_pressed("shoot")):
+					animated_sprite.play("ExploGunIdle")
+					shoot()
+				else:
+					animated_sprite.play("ExploIdle")
 
 func update_facing_direction():
 	if direction.x > 0:
@@ -124,16 +144,13 @@ func jump():
 	velocity.y = jump_velocity
 	animated_sprite.play("ExploJumpStart")
 	animation_locked = true
-	if(is_on_ceiling()):
-		print("TOUCHING CEILING")
+	
 	
 func double_jump():
 	velocity.y = double_jump_velocity * 3
 	animated_sprite.play("ExploJumpLoop")	
 	animation_locked = true
 	has_double_jumped = true
-	if(is_on_ceiling()):
-		print("TOUCHING CEILING")
 	
 func dash():
 	if animated_sprite.flip_h == false:
@@ -152,6 +169,8 @@ func dash():
 		$dash_timer.start()
 
 func land():
+	if(Input.is_action_pressed("shoot")):
+		shoot()
 	animated_sprite.play("ExploJumpEnd")
 	animation_locked = true
  
@@ -193,10 +212,30 @@ func check_jetfuel():
 		if(jetpack_fuel > 2):
 			jetpack_fuel = 2
 			_set_jetfuel()
+			
+func shoot():
+	if can_shoot:
+		can_shoot = false
+		var instance = bullet.instantiate()
+		instance.flip(false)
+		instance.dir = rotation
+		instance.spawnPos = Vector2(global_position.x - 19 ,global_position.y - 9) 
+		instance.spawnRot = global_rotation
+		if animated_sprite.flip_h == true:
+			instance.flip(true)
+			instance.spawnPos = Vector2(global_position.x,global_position.y - 9)
+			
+		main.add_child.call_deferred(instance)
+		mag_size -= 1
+		check_mag_size(mag_size)
+		print(mag_size)
 
-func apply_knockback(direction: Vector2, force: float, knockback_duration: float) -> void:
-	knockback = direction * force
-	knockback_timer = knockback_duration
+func check_mag_size(mag: int):
+	if mag <= 0:
+		can_shoot = false
+		$reload_timer.start()
+	else:
+		$gun_cooldown.start()
 
 func _on_animated_sprite_2d_animation_finished() -> void:
 	if(["ExploJumpEnd","ExploJumpStart","ExploJumpDouble","ExploDash"].has(animated_sprite.animation)):
@@ -225,7 +264,7 @@ func _on_jump_height_timer_timeout() -> void:
 func killPlayer():
 	position = %RespawnPoint.position
 
-func _on_area_2d_body_entered(body: Node2D) -> void:
+func _on_area_2d_body_entered() -> void:
 	killPlayer()
 
 
@@ -235,3 +274,12 @@ func _on_coyote_timer_timeout() -> void:
 
 func _on_jump_buffer_timer_timeout() -> void:
 	jump_buffered = false
+
+
+func _on_gun_cooldown_timeout() -> void:
+	can_shoot = true
+
+
+func _on_reload_timer_timeout() -> void:
+	mag_size = max_mag_size
+	can_shoot = true

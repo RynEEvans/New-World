@@ -16,6 +16,10 @@ region = Rect2(96, 0, 48, 48)
 atlas = ExtResource("3_ur0x2")
 region = Rect2(144, 0, 48, 48)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_cyipv"]
+atlas = ExtResource("3_ur0x2")
+region = Rect2(240, 0, 48, 48)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_0qjmq"]
 atlas = ExtResource("3_crn8y")
 region = Rect2(0, 0, 48, 48)
@@ -180,6 +184,29 @@ animations = [{
 "loop": false,
 "name": &"ExploDash",
 "speed": 15.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cyipv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cyipv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cyipv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cyipv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cyipv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cyipv")
+}],
+"loop": false,
+"name": &"ExploGunIdle",
+"speed": 5.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -359,6 +386,9 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_76vsb"]
+size = Vector2(7, 4)
+
 [node name="Player" type="CharacterBody2D" unique_id=1945334938]
 collision_layer = 3
 collision_mask = 3
@@ -366,12 +396,11 @@ script = ExtResource("1_3c51y")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1259095667]
 sprite_frames = SubResource("SpriteFrames_tp31j")
-animation = &"ExploJumpEnd"
+animation = &"ExploGunIdle"
 autoplay = "ExploIdle"
-frame = 3
-frame_progress = 1.0
 centered = false
 offset = Vector2(-32, -32)
+flip_h = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=838017947]
 position = Vector2(-7, -6)
@@ -407,6 +436,14 @@ wait_time = 0.05
 [node name="jump_buffer_timer" type="Timer" parent="." unique_id=77179644]
 wait_time = 0.1
 
+[node name="gun_cooldown" type="Timer" parent="." unique_id=1733602455]
+wait_time = 0.2
+one_shot = true
+
+[node name="reload_timer" type="Timer" parent="." unique_id=1744293653]
+wait_time = 3.0
+one_shot = true
+
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=2038372543]
 
 [node name="FuelBar" type="AnimatedSprite2D" parent="CanvasLayer" unique_id=799814982]
@@ -414,6 +451,10 @@ position = Vector2(53.000004, 125.00001)
 scale = Vector2(3.5200002, 3.5200002)
 sprite_frames = SubResource("SpriteFrames_ur0x2")
 animation = &"tankFull"
+
+[node name="Gun" type="CollisionShape2D" parent="." unique_id=1772488815]
+position = Vector2(3.5, -6)
+shape = SubResource("RectangleShape2D_76vsb")
 
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="timeout" from="dash_timer" to="." method="_on_dash_timer_timeout"]
@@ -424,3 +465,5 @@ animation = &"tankFull"
 [connection signal="timeout" from="jump_height_timer" to="." method="_on_jump_height_timer_timeout"]
 [connection signal="timeout" from="coyote_timer" to="." method="_on_coyote_timer_timeout"]
 [connection signal="timeout" from="jump_buffer_timer" to="." method="_on_jump_buffer_timer_timeout"]
+[connection signal="timeout" from="gun_cooldown" to="." method="_on_gun_cooldown_timeout"]
+[connection signal="timeout" from="reload_timer" to="." method="_on_reload_timer_timeout"]

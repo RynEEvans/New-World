@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://dgh5dge6j6kui"]
+
+[ext_resource type="Script" uid="uid://di5l7vmyj8eex" path="res://bullet.gd" id="1_ug0kq"]
+[ext_resource type="Texture2D" uid="uid://c2af7vt01jew4" path="res://Assests/DumDumAssests/Character/bullet.png" id="2_tid2b"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ug0kq"]
+radius = 0.5454544
+height = 1.0909088
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tid2b"]
+size = Vector2(4.545452, 3.454548)
+
+[node name="Bullet" type="CharacterBody2D" unique_id=1724319214]
+light_mask = 8
+visibility_layer = 8
+z_index = 10
+scale = Vector2(1.7599999, 1.7599999)
+script = ExtResource("1_ug0kq")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=198857953]
+texture = ExtResource("2_tid2b")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1050337419]
+position = Vector2(15.909096, 1.0909086)
+scale = Vector2(1.0000001, 1)
+shape = SubResource("CapsuleShape2D_ug0kq")
+disabled = true
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1839772087]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=605311836]
+position = Vector2(15.909092, 1.0909086)
+scale = Vector2(1.0000004, 1)
+shape = SubResource("RectangleShape2D_tid2b")
+
+[node name="life" type="Timer" parent="." unique_id=316663639]
+wait_time = 2.0
+autostart = true
+
+[connection signal="timeout" from="life" to="." method="_on_life_timeout"]
