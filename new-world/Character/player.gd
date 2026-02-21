@@ -22,6 +22,8 @@ var dashDirection = Vector2(1,0)
 var was_on_floor = is_on_floor()
 var can_coyote_jump : bool = false
 var jump_buffered : bool = false
+var knockback: Vector2 = Vector2.ZERO
+var knockback_timer : float = 0.0
 
 func _ready():
 	jetpack_fuel = 2
@@ -29,6 +31,12 @@ func _ready():
 	fuelbar.play("tankFull")
 
 func _physics_process(delta: float) -> void:
+	if knockback_timer > 0.0:
+		velocity = knockback
+		knockback_timer -= delta
+		if knockback_timer <= 0.0:
+			knockback = Vector2.ZERO
+	
 	# Add the gravity.
 	if not is_on_floor() && can_coyote_jump == false:
 		velocity += get_gravity() * delta * player_gravity
@@ -73,7 +81,7 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, walk_speed)
 		
 
-	var 	was_on_floor = is_on_floor()
+	var was_on_floor = is_on_floor()
 	
 	move_and_slide()
 	
@@ -90,6 +98,8 @@ func _physics_process(delta: float) -> void:
 	
 	update_animation()
 	update_facing_direction()
+
+
 
 func update_animation():
 	if not animation_locked:
@@ -183,6 +193,10 @@ func check_jetfuel():
 		if(jetpack_fuel > 2):
 			jetpack_fuel = 2
 			_set_jetfuel()
+
+func apply_knockback(direction: Vector2, force: float, knockback_duration: float) -> void:
+	knockback = direction * force
+	knockback_timer = knockback_duration
 
 func _on_animated_sprite_2d_animation_finished() -> void:
 	if(["ExploJumpEnd","ExploJumpStart","ExploJumpDouble","ExploDash"].has(animated_sprite.animation)):

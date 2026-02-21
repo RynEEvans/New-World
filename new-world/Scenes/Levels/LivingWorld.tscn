@@ -241,9 +241,10 @@ position = Vector2(-129, -28)
 shape = SubResource("WorldBoundaryShape2D_r2g7h")
 
 [node name="Player" parent="." unique_id=1945334938 instance=ExtResource("2_wfklx")]
+unique_name_in_owner = true
 z_index = 2
 z_as_relative = false
-position = Vector2(-1, -51)
+position = Vector2(6, -99)
 floor_stop_on_slope = false
 floor_snap_length = 10.1
 

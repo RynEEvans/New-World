@@ -213,13 +213,66 @@ animations = [{
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hkuac"]
 radius = 7.700475
-height = 38.0
+height = 40.956097
+
+[sub_resource type="Animation" id="Animation_hkuac"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-1, -2)]
+}
+
+[sub_resource type="Animation" id="Animation_0laho"]
+resource_name = "forward_lunge"
+length = 0.7
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.04, 0.16666667, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(-58, -2), Vector2(-58, -2), Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_jh3tt"]
+resource_name = "right_lunge"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.12666667, 0.56, 0.65999997),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(58, -2), Vector2(58, -2), Vector2(0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_jh3tt"]
+_data = {
+&"RESET": SubResource("Animation_hkuac"),
+&"left_lunge": SubResource("Animation_0laho"),
+&"right_lunge": SubResource("Animation_jh3tt")
+}
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ldw6m"]
-size = Vector2(54, 7)
+size = Vector2(49, 1.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_iwmjb"]
-size = Vector2(97, 44)
+size = Vector2(68.5, 23)
 
 [node name="Gulper" type="CharacterBody2D" unique_id=1240666865]
 script = ExtResource("1_ldw6m")
@@ -229,21 +282,42 @@ position = Vector2(-35, -2)
 sprite_frames = SubResource("SpriteFrames_hxu7c")
 animation = &"Idle"
 autoplay = "Idle"
-frame_progress = 0.07447101
 
-[node name="Head" type="CollisionShape2D" parent="." unique_id=1501994884]
+[node name="HeadHitBox" type="Area2D" parent="." unique_id=149545991]
+position = Vector2(-1, -2)
+collision_layer = 2
+collision_mask = 2
+
+[node name="Head" type="CollisionShape2D" parent="HeadHitBox" unique_id=1501994884]
 position = Vector2(0, 4)
 scale = Vector2(3.7660012, -1.2696522)
 shape = SubResource("CapsuleShape2D_hkuac")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="HeadHitBox" unique_id=1296682795]
+libraries/ = SubResource("AnimationLibrary_jh3tt")
 
 [node name="ray_timer" type="Timer" parent="." unique_id=66492121]
 
 [node name="direction_timer" type="Timer" parent="." unique_id=521888903]
 autostart = true
 
+[node name="charge_time" type="Timer" parent="." unique_id=446827458]
+wait_time = 0.75
+one_shot = true
+
+[node name="move_timer" type="Timer" parent="." unique_id=896798661]
+wait_time = 0.75
+one_shot = true
+
+[node name="wall_timer" type="Timer" parent="." unique_id=314127101]
+wait_time = 0.75
+
+[node name="lunge_cooldown" type="Timer" parent="." unique_id=289208375]
+
 [node name="Base" type="CollisionShape2D" parent="." unique_id=2098673208]
-position = Vector2(-1, 36.5)
+position = Vector2(0.5, 36.75)
 shape = SubResource("RectangleShape2D_ldw6m")
+one_way_collision = true
 
 [node name="LeftCast" type="RayCast2D" parent="." unique_id=1866968339]
 target_position = Vector2(-32, 41)
@@ -252,12 +326,24 @@ target_position = Vector2(-32, 41)
 target_position = Vector2(31, 42)
 
 [node name="ForwardLunge" type="Area2D" parent="." unique_id=364054172]
+collision_layer = 2
+collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ForwardLunge" unique_id=1566941506]
-position = Vector2(-20, 3)
+position = Vector2(-34.25, 7.5)
 shape = SubResource("RectangleShape2D_iwmjb")
 
+[node name="wall_detection" type="RayCast2D" parent="." unique_id=1707321751]
+target_position = Vector2(-37, 0)
+hit_from_inside = true
+collide_with_areas = true
+
+[connection signal="body_entered" from="HeadHitBox" to="." method="_on_head_hit_box_body_entered"]
 [connection signal="timeout" from="ray_timer" to="." method="_on_ray_timer_timeout"]
 [connection signal="timeout" from="direction_timer" to="." method="_on_direction_timer_timeout"]
+[connection signal="timeout" from="charge_time" to="." method="_on_charge_time_timeout"]
+[connection signal="timeout" from="move_timer" to="." method="_on_move_timer_timeout"]
+[connection signal="timeout" from="wall_timer" to="." method="_on_wall_timer_timeout"]
+[connection signal="timeout" from="lunge_cooldown" to="." method="_on_lunge_cooldown_timeout"]
 [connection signal="area_entered" from="ForwardLunge" to="." method="_on_forward_lunge_area_entered"]
 [connection signal="body_entered" from="ForwardLunge" to="." method="_on_forward_lunge_body_entered"]

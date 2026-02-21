@@ -4,8 +4,10 @@ class_name CeilingGulperEnemy
 
 @onready var Lray = $LeftCast
 @onready var Rray = $RightCast
+@onready var wall_ray = $wall_detection
 @onready var animated_sprite = $AnimatedSprite2D
-@onready var for_lunge_hbox = $ForwardLunge
+@onready var for_lunge_detection = $ForwardLunge
+@onready var for_lunge_hitbox = $HeadHitBox/AnimationPlayer
 
 const speed = 30
 var gulp_is_chase : bool
@@ -26,7 +28,7 @@ const gravity = 490
 var knockback_force = 200
 var is_roaming : bool = true
 var motion_locked : bool = false
-
+var hit_wall : bool = false
 
 
 func _process(delta):
@@ -37,6 +39,11 @@ func _process(delta):
 		ray_trigger = true
 		$ray_timer.start()
 		dir = dir * -1
+	if (is_on_wall()):
+		if(hit_wall == false):
+			hit_wall = true
+			$wall_timer.start()
+			dir *= -1
 	
 	move(delta)
 	move_and_slide()
@@ -48,12 +55,14 @@ func update_facing_direction():
 		dir = Vector2(1,0)
 		animated_sprite.flip_h = false
 		animated_sprite.offset = Vector2.ZERO
-		for_lunge_hbox.position = Vector2.ZERO
+		for_lunge_detection.position = Vector2.ZERO
+		for_lunge_detection.position = Vector2.ZERO
 	elif dir.x < 0:
 		dir = Vector2(-1,0)
 		animated_sprite.flip_h = true
 		animated_sprite.offset = Vector2(70.0,0)
-		for_lunge_hbox.position = Vector2(40.0,0)
+		for_lunge_detection.position = Vector2(35.0,0)
+		for_lunge_detection.position = Vector2(35.0,0)
 
 func move(delta):
 	if !motion_locked:
@@ -70,7 +79,13 @@ func choose(array):
 
 func forward_lunge():
 	velocity.x = 0
-	animated_sprite.play("ForwardLunge")
+	motion_locked = true
+	animated_sprite.play("Charge")
+	$charge_time.start()
+	
+func check_for_wall():
+	if (wall_ray.is_colliding()):
+		$wall_timer.start()
 
 func _on_direction_timer_timeout() -> void:
 	if !motion_locked:
@@ -82,7 +97,19 @@ func _on_direction_timer_timeout() -> void:
 func _on_ray_timer_timeout() -> void:
 	ray_trigger = false
 
-
 func _on_forward_lunge_body_entered(body: Node2D) -> void:
-	print("goteeeeemm")
 	forward_lunge()
+
+func _on_head_hit_box_body_entered(body: Node2D) -> void:
+	print("goteeeeeem")
+	
+func _on_charge_time_timeout() -> void:
+	animated_sprite.play("ForwardLunge")
+	for_lunge_hitbox.play("forward_lunge")
+	$move_timer.start()
+
+func _on_move_timer_timeout() -> void:
+	motion_locked = false
+
+func _on_wall_timer_timeout() -> void:
+	hit_wall = false
