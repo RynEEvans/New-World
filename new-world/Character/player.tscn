@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://fleg7ampst5b" path="res://Assests/DumDumAssests/UI/tankFull.png" id="7_crn8y"]
 [ext_resource type="Texture2D" uid="uid://dihrwcw55e4f7" path="res://Assests/DumDumAssests/UI/tankHalf.png" id="8_8qfpo"]
 [ext_resource type="Texture2D" uid="uid://dndvgqm4lcqb4" path="res://Assests/DumDumAssests/Character/healthBar.png" id="10_8qfpo"]
+[ext_resource type="Texture2D" uid="uid://bkep1mtyrs6rx" path="res://Assests/DumDumAssests/Character/gun.png" id="11_ur0x2"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_crn8y"]
 atlas = ExtResource("2_76vsb")
@@ -766,6 +767,17 @@ position = Vector2(100, 20.000061)
 scale = Vector2(3.64, 3.64)
 sprite_frames = SubResource("SpriteFrames_5xm0m")
 animation = &"10"
+
+[node name="PanelContainer3" type="PanelContainer" parent="CanvasLayer" unique_id=75700819]
+offset_left = 967.0
+offset_top = 585.0
+offset_right = 1007.0
+offset_bottom = 625.0
+
+[node name="Sprite2D" type="Sprite2D" parent="CanvasLayer/PanelContainer3" unique_id=785803861]
+position = Vector2(40, 21)
+scale = Vector2(13.239995, 13.239995)
+texture = ExtResource("11_ur0x2")
 
 [node name="fall_box" type="Area2D" parent="." unique_id=1299847002]
 collision_layer = 2147483648
