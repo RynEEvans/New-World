@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://c85lf48g3n7tv"]
+
+[ext_resource type="Script" uid="uid://d8tacyrlo2bs" path="res://Entities/Items/fuel_power_up.gd" id="1_bh1np"]
+[ext_resource type="Texture2D" uid="uid://fleg7ampst5b" path="res://UI/Fuelbar/Art/tankFull.png" id="1_uogkw"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bh1np"]
+size = Vector2(12, 45)
+
+[node name="Area2D" type="Area2D" unique_id=1310086861]
+collision_layer = 512
+collision_mask = 512
+script = ExtResource("1_bh1np")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=483714848]
+texture = ExtResource("1_uogkw")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=616610645]
+position = Vector2(0, 1)
+shape = SubResource("RectangleShape2D_bh1np")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

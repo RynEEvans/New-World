@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://bjq602kyeasi1"]
+
+[ext_resource type="Script" uid="uid://ko1oc8x7wqsx" path="res://Entities/Items/flesh_berry.gd" id="1_oofcw"]
+[ext_resource type="Texture2D" uid="uid://fh3v6tre8iwd" path="res://Entities/Items/fleshBerry.png" id="1_torbc"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_oofcw"]
+
+[node name="FleshBerry" type="Area2D" unique_id=35130406]
+collision_layer = 512
+collision_mask = 512
+script = ExtResource("1_oofcw")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=233710017]
+texture = ExtResource("1_torbc")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2065949173]
+shape = SubResource("RectangleShape2D_oofcw")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
