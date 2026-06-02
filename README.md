@@ -1,2 +1,2 @@
-# New World
-Videogame for Brackey's Game Jam
+# AIS Charon
+A Vidoeogame by DumDumGames

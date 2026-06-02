@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://npdwllx6byti"]
+
+[ext_resource type="Texture2D" uid="uid://cm4gmxnnll2qy" path="res://Assests/DumDumAssests/UI/TitleScreen.png" id="1_28flt"]
+[ext_resource type="Script" uid="uid://db2fwcwhmb3dy" path="res://Scenes/main_menu.gd" id="1_48xlc"]
+
+[node name="Main Menu" type="Node2D" unique_id=820716220]
+script = ExtResource("1_48xlc")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=877268614]
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("1_28flt")
+
+[node name="Button" type="Button" parent="." unique_id=1011025786]
+offset_left = 528.0
+offset_top = 328.0
+offset_right = 609.0
+offset_bottom = 359.0
+text = "START"
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

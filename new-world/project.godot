@@ -14,12 +14,15 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 [application]
 
-config/name="New World"
-run/main_scene="uid://npdwllx6byti"
+config/name="AIS Charon"
+run/main_scene="uid://jaaqf23yx5kc"
 config/features=PackedStringArray("4.6", "Forward Plus")
 boot_splash/bg_color=Color(0.5019608, 0.7764706, 0.9019608, 1)
 boot_splash/image="uid://ci68bn5234tjd"
-config/icon="res://icon.svg"
+
+[audio]
+
+buses/default_bus_layout="uid://cw4j3fmu8ppv7"
 
 [display]
 
@@ -29,7 +32,14 @@ window/stretch/mode="viewport"
 [file_customization]
 
 folder_colors={
-"res://Assests/DumDumAssests/Enemies/": "red"
+"res://Entities/Character/": "blue",
+"res://Entities/Character/Gun/": "red",
+"res://Entities/Enemies/": "red",
+"res://Entities/Items/": "green",
+"res://Entities/Projectiles/": "yellow",
+"res://Stages/Level 1/": "green",
+"res://UI/Fuelbar/": "orange",
+"res://UI/Health Bar/": "green"
 }
 
 [input]
