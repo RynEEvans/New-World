@@ -11,6 +11,7 @@ extends CharacterBody2D
 @onready var gun_sprite : AnimatedSprite2D = $GunArm #The Right Arm Sprite which holds the gun
 @onready var fuelbar = $CanvasLayer/PanelContainer/FuelBar #The Fuel Bar UI
 @onready var healthbar = $CanvasLayer/PanelContainer2/HealthBar #The Healthbar UI
+@onready var o2bar = $CanvasLayer/PanelContainer5/O2Bar #The O2 Bar UI
 @onready var headUI = $CanvasLayer/PanelContainer4/Head #The Head UI
 @onready var main = get_tree().get_root().get_node(".") #Lowkey forgot what this does, and why I have it
 @onready var bullet = load("res://Entities/Projectiles/Bullet/bullet.tscn") #The Bullet Sprite
@@ -39,7 +40,7 @@ var min_knockback := 100
 var slow_knockback := 1.1
 
 #Animation Stuff
-var char_flipped : bool = false
+var facing_left : bool = false
 var animation_locked : bool = false
 var movement_locked : bool = false
 
@@ -56,8 +57,16 @@ var health_max = 10
 var health_min = 0
 var has_died : bool = false
 
+#O2 Stuff
+var o2 = 100
+var o2_max = 100
+var o2_min = 0
+
 func _ready():
 	jetpack_fuel = 2
+	health = 10
+	o2 = 100
+	update_health_bar()
 	fuelbar.play("tankFull")
 	
 
@@ -98,7 +107,7 @@ func _physics_process(delta: float):
 			else:
 				if !jump_buffered:
 					jump_buffered = true
-					$jump_buffer_timer.start()
+					$Timers/jump_buffer_timer.start()
 		elif jetpack_fuel != 0:
 			#Double Jump in the Air
 			double_jump()
@@ -127,7 +136,7 @@ func _physics_process(delta: float):
 	#Started to fall
 	if (was_on_floor && !is_on_floor() && velocity.y >= 0):
 		can_coyote_jump = true
-		$coyote_timer.start()
+		$Timers/coyote_timer.start()
 	
 	#touched ground
 	if not was_on_floor && is_on_floor():
@@ -150,13 +159,13 @@ func update_animation():
 			animated_sprite.play("ExploJumpLoop")
 		else:
 			if direction.x != 0:
-				if char_flipped == false:
+				if facing_left == false:
 					animated_sprite.play("RunRight")
 					gun_sprite.visible = true
 					gun_sprite.z_index = 0
 					gun_sprite.play("GunWalkRight")
 				else:
-					char_flipped = true
+					facing_left = true
 					animated_sprite.play("RunLeft")
 					gun_sprite.visible = true
 					gun_sprite.z_index = -1
@@ -164,7 +173,7 @@ func update_animation():
 			else:
 				if(Input.is_action_pressed("shoot")):
 					gun_sprite.visible = true
-					if(char_flipped == false):
+					if(facing_left == false):
 						gun_sprite.z_index = 0
 						gun_sprite.play("ShootRight")
 					else:
@@ -172,16 +181,21 @@ func update_animation():
 						gun_sprite.play("ShootLeft")
 					shoot()
 				else:
-					animated_sprite.play("ExploIdle")
+					if (facing_left == true):
+						animated_sprite.play("IdleLeft")
+						gun_sprite.visible = false
+					else:
+						animated_sprite.play("IdleRight")
+						gun_sprite.visible = false
 
-#Changes the Boolean (char_flipped) so I know whether to play the right or left animation
+#Changes the Boolean (facing_left) so I know whether to play the right or left animation
 func update_facing_direction():
 	if direction.x > 0:
 		dashDirection = Vector2(1,0)
-		char_flipped = false
+		facing_left = false
 	elif direction.x < 0:
 		dashDirection = Vector2(-1,0)
-		char_flipped = true
+		facing_left = true
 
 #Health and Health Bar Code
 func update_health_bar():
@@ -217,9 +231,33 @@ func update_health_bar():
 		healthbar.play("1")
 		headUI.play("Low")
 
+#O2 and O2 Bar Code
+func update_o2_bar():
+	if o2 >= 100:
+		o2 = 100
+		o2bar.play("25")
+	elif health == 9:
+		healthbar.play("9")
+	elif health == 8:
+		healthbar.play("8")
+	elif health == 7:
+		healthbar.play("7")
+	elif health == 6:
+		healthbar.play("6")
+	elif health == 5:
+		healthbar.play("5")
+	elif health == 4:
+		healthbar.play("4")
+	elif health == 3:
+		healthbar.play("3")
+	elif health == 2:
+		healthbar.play("2")
+	elif health == 1:
+		healthbar.play("1")
+
 #Jump Handling
 func jump():
-	$jump_height_timer.start()
+	$Timers/jump_height_timer.start()
 	velocity.y = jump_velocity
 	animated_sprite.play("ExploJumpStart")
 	animation_locked = true
@@ -246,14 +284,14 @@ func dash():
 		animated_sprite.play("ExploDash")
 		animation_locked = true
 		movement_locked = true
-		$dash_timer.start()
+		$Timers/dash_timer.start()
 	else:
 		velocity = dashDirection.normalized() * dash_speed
 		velocity.y = 0
 		animated_sprite.play("ExploDash")
 		animation_locked = true
 		movement_locked = true
-		$dash_timer.start()
+		$Timers/dash_timer.start()
  
 #Jet Fuel Setter
 func _set_jetfuel():
@@ -275,23 +313,23 @@ func remove_jetfuel():
 	_set_jetfuel()
 	check_jetfuel()
 	if(jetpack_fuel == 1): 
-		$fuel_timer1.start()
+		$Timers/fuel_timer1.start()
 	else:
-		$fuel_timer2.start()
-		if($fuel_timer1.time_left == 0):
-			$fuel_timer1.start()
+		$Timers/fuel_timer2.start()
+		if($Timers/fuel_timer1.time_left == 0):
+			$Timers/fuel_timer1.start()
 
 #Checking Jet Fuel to make sure it doesnt go above it's Maximum
 func check_jetfuel():
 	if(jetpack_fuel != max_fuel):
 		if(jetpack_fuel == 1):
-			if ($fuel_timer1.time_left == 0):
-				$fuel_timer1.start()
+			if ($Timers/fuel_timer1.time_left == 0):
+				$Timers/fuel_timer1.start()
 			else:
 				pass
 		elif (jetpack_fuel == 0):
-			if($fuel_timer2.time_left != 0):
-				$fuel_timer2.start()
+			if($Timers/fuel_timer2.time_left != 0):
+				$Timers/fuel_timer2.start()
 			else:
 				pass
 		if(jetpack_fuel > 2):
@@ -318,9 +356,9 @@ func shoot():
 func check_mag_size(mag: int):
 	if mag <= 0:
 		can_shoot = false
-		$reload_timer.start()
+		$Timers/reload_timer.start()
 	else:
-		$gun_cooldown.start()
+		$Timers/gun_cooldown.start()
 
 #Animation Lock
 func _on_animated_sprite_2d_animation_finished() -> void:
@@ -335,7 +373,7 @@ func killPlayer():
 	animated_sprite.play("Death")
 	$hitbox.monitoring = false
 	if has_died == false:
-		$respawn_timer.start()
+		$Timers/respawn_timer.start()
 		has_died = true
 
 #TIMERS BELOW
