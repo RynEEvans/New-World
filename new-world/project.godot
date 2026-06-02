@@ -15,7 +15,6 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="AIS Charon"
-run/main_scene="uid://jaaqf23yx5kc"
 config/features=PackedStringArray("4.6", "Forward Plus")
 boot_splash/bg_color=Color(0.5019608, 0.7764706, 0.9019608, 1)
 boot_splash/image="uid://ci68bn5234tjd"
