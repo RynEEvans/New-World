@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://d2aukbbno3mkv"
-path="res://.godot/imported/Lee.png-59747e6d6fee266c62b5907d5c5d57d1.ctex"
+path="res://.godot/imported/Lee.png-56dc0f9fce3cc4fd752e353a6b2b132d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assests/DumDumAssests/Devs/Lee.png"
-dest_files=["res://.godot/imported/Lee.png-59747e6d6fee266c62b5907d5c5d57d1.ctex"]
+source_file="res://Assests/Credits/Devs/Lee.png"
+dest_files=["res://.godot/imported/Lee.png-56dc0f9fce3cc4fd752e353a6b2b132d.ctex"]
 
 [params]
 
