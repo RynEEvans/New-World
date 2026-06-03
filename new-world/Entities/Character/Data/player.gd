@@ -7,7 +7,7 @@ extends CharacterBody2D
 @export var dash_speed : float = 2000.0
 @export var player_gravity : float = 1
 
-@onready var animated_sprite : AnimatedSprite2D = $Body #The Main Character Body
+@onready var player_sprite : AnimatedSprite2D = $Body #The Main Character Body
 @onready var gun_sprite : AnimatedSprite2D = $GunArm #The Right Arm Sprite which holds the gun
 @onready var fuelbar = $CanvasLayer/PanelContainer/FuelBar #The Fuel Bar UI
 @onready var healthbar = $CanvasLayer/PanelContainer2/HealthBar #The Healthbar UI
@@ -40,7 +40,7 @@ var min_knockback := 100
 var slow_knockback := 1.1
 
 #Animation Stuff
-var char_flipped : bool = false
+var facing_left : bool = false
 var animation_locked : bool = false
 var movement_locked : bool = false
 
@@ -58,13 +58,14 @@ var health_min = 0
 var has_died : bool = false
 
 #O2 Stuff
-var o2 = 25
-var o2_max = 25
+var o2 = 100
+var o2_max = 100
 var o2_min = 0
+var suffocating = false
 
 func _ready():
 	health = 10
-	o2 = 25
+	o2 = 10
 	update_health_bar()
 	update_o2_bar()
 	$Timers/o2_timer.start()
@@ -109,7 +110,7 @@ func _physics_process(delta: float):
 			else:
 				if !jump_buffered:
 					jump_buffered = true
-					$jump_buffer_timer.start()
+					$Timers/jump_buffer_timer.start()
 		elif jetpack_fuel != 0:
 			#Double Jump in the Air
 			double_jump()
@@ -138,7 +139,7 @@ func _physics_process(delta: float):
 	#Started to fall
 	if (was_on_floor && !is_on_floor() && velocity.y >= 0):
 		can_coyote_jump = true
-		$coyote_timer.start()
+		$Timers/coyote_timer.start()
 	
 	#touched ground
 	if not was_on_floor && is_on_floor():
@@ -158,24 +159,24 @@ func update_animation():
 		if health <= 0:
 			killPlayer()
 		elif not is_on_floor():
-			animated_sprite.play("ExploJumpLoop")
+			player_sprite.play("ExploJumpLoop")
 		else:
 			if direction.x != 0:
-				if char_flipped == false:
-					animated_sprite.play("RunRight")
+				if facing_left == false:
+					player_sprite.play("RunRight")
 					gun_sprite.visible = true
 					gun_sprite.z_index = 0
 					gun_sprite.play("GunWalkRight")
 				else:
-					char_flipped = true
-					animated_sprite.play("RunLeft")
+					facing_left = true
+					player_sprite.play("RunLeft")
 					gun_sprite.visible = true
 					gun_sprite.z_index = -1
 					gun_sprite.play("GunWalkLeft")
 			else:
 				if(Input.is_action_pressed("shoot")):
 					gun_sprite.visible = true
-					if(char_flipped == false):
+					if(facing_left == false):
 						gun_sprite.z_index = 0
 						gun_sprite.play("ShootRight")
 					else:
@@ -183,16 +184,21 @@ func update_animation():
 						gun_sprite.play("ShootLeft")
 					shoot()
 				else:
-					animated_sprite.play("ExploIdle")
+					if (facing_left == true):
+						player_sprite.play("IdleLeft")
+						gun_sprite.visible = false
+					else:
+						player_sprite.play("IdleRight")
+						gun_sprite.visible = false
 
-#Changes the Boolean (char_flipped) so I know whether to play the right or left animation
+#Changes the Boolean (facing_left) so I know whether to play the right or left animation
 func update_facing_direction():
 	if direction.x > 0:
 		dashDirection = Vector2(1,0)
-		char_flipped = false
+		facing_left = false
 	elif direction.x < 0:
 		dashDirection = Vector2(-1,0)
-		char_flipped = true
+		facing_left = true
 
 #Health and Health Bar Code
 func update_health_bar():
@@ -230,27 +236,35 @@ func update_health_bar():
 
 #O2 and O2 Health Bar
 func update_o2_bar():
-	if o2 >= 25:
-		o2 = 25
-	for i in range(25):
+	if o2 >= 100:
+		o2 = 100
+	for i in range(100):
+		var i_timer : int = int(i/4) #Turning 0-100 into 0-25 to change sprites
 		if (o2 == i):
-			var i_text: String = str(i) # Converts i to String
+			var i_text: String = str(i_timer) # Converts i to String
 			o2bar.play(i_text)
-
-func o2_deplete():
-	$Timers/o2_timer.start()
+	if (o2 <= 0) && (suffocating == false):
+		$Timers/suffocate_timer.start()
+		suffocating = true
+		print(o2)
+		print("Suffocating")
+	elif (o2 >= 0):
+		suffocating = false
+		$Timers/suffocate_timer.stop()
+		print(o2)
+		print("Not Suffocating")
 
 #Jump Handling
 func jump():
-	$jump_height_timer.start()
+	$Timers/jump_height_timer.start()
 	velocity.y = jump_velocity
-	animated_sprite.play("ExploJumpStart")
+	player_sprite.play("ExploJumpStart")
 	animation_locked = true
 	
 #Double Jump Handling
 func double_jump():
 	velocity.y = double_jump_velocity * 3
-	animated_sprite.play("ExploJumpLoop")	
+	player_sprite.play("ExploJumpLoop")	
 	animation_locked = true
 	has_double_jumped = true
 
@@ -258,25 +272,25 @@ func double_jump():
 func land():
 	if(Input.is_action_pressed("shoot")):
 		shoot()
-	animated_sprite.play("ExploJumpEnd")
+	player_sprite.play("ExploJumpEnd")
 	animation_locked = true
 
 #Dash Handling
 func dash():
-	if animated_sprite.flip_h == false:
+	if player_sprite.flip_h == false:
 		velocity = dashDirection.normalized() * dash_speed
 		velocity.y = 0
-		animated_sprite.play("ExploDash")
+		player_sprite.play("ExploDash")
 		animation_locked = true
 		movement_locked = true
-		$dash_timer.start()
+		$Timers/dash_timer.start()
 	else:
 		velocity = dashDirection.normalized() * dash_speed
 		velocity.y = 0
-		animated_sprite.play("ExploDash")
+		player_sprite.play("ExploDash")
 		animation_locked = true
 		movement_locked = true
-		$dash_timer.start()
+		$Timers/dash_timer.start()
  
 #Jet Fuel Setter
 func _set_jetfuel():
@@ -298,23 +312,23 @@ func remove_jetfuel():
 	_set_jetfuel()
 	check_jetfuel()
 	if(jetpack_fuel == 1): 
-		$fuel_timer1.start()
+		$Timers/fuel_timer1.start()
 	else:
-		$fuel_timer2.start()
-		if($fuel_timer1.time_left == 0):
-			$fuel_timer1.start()
+		$Timers/fuel_timer2.start()
+		if($Timers/fuel_timer1.time_left == 0):
+			$Timers/fuel_timer1.start()
 
 #Checking Jet Fuel to make sure it doesnt go above it's Maximum
 func check_jetfuel():
 	if(jetpack_fuel != max_fuel):
 		if(jetpack_fuel == 1):
-			if ($fuel_timer1.time_left == 0):
-				$fuel_timer1.start()
+			if ($Timers/fuel_timer1.time_left == 0):
+				$Timers/fuel_timer1.start()
 			else:
 				pass
 		elif (jetpack_fuel == 0):
-			if($fuel_timer2.time_left != 0):
-				$fuel_timer2.start()
+			if($Timers/fuel_timer2.time_left != 0):
+				$Timers/fuel_timer2.start()
 			else:
 				pass
 		if(jetpack_fuel > 2):
@@ -330,7 +344,7 @@ func shoot():
 		instance.dir = rotation
 		instance.spawnPos = Vector2(global_position.x - 43 ,global_position.y - 33)
 		instance.spawnRot = global_rotation
-		if animated_sprite.flip_h == true:
+		if player_sprite.flip_h == true:
 			instance.flip(true)
 			instance.spawnPos = Vector2(global_position.x - 20,global_position.y - 33)
 		main.add_child.call_deferred(instance)
@@ -341,13 +355,13 @@ func shoot():
 func check_mag_size(mag: int):
 	if mag <= 0:
 		can_shoot = false
-		$reload_timer.start()
+		$Timers/reload_timer.start()
 	else:
-		$gun_cooldown.start()
+		$Timers/gun_cooldown.start()
 
 #Animation Lock
-func _on_animated_sprite_2d_animation_finished() -> void:
-	if(["ExploJumpEnd","ExploJumpStart","ExploJumpDouble","ExploDash","Death"].has(animated_sprite.animation)):
+func _on_player_sprite_2d_animation_finished() -> void:
+	if(["ExploJumpEnd","ExploJumpStart","ExploJumpDouble","ExploDash","Death"].has(player_sprite.animation)):
 		animation_locked = false
 
 #Handing the Death Animation
@@ -355,10 +369,10 @@ func killPlayer():
 	movement_locked = true
 	animation_locked = true
 	gun_sprite.visible = false
-	animated_sprite.play("Death")
+	player_sprite.play("Death")
 	$hitbox.monitoring = false
 	if has_died == false:
-		$respawn_timer.start()
+		$Timers/respawn_timer.start()
 		has_died = true
 
 #TIMERS BELOW
@@ -399,7 +413,7 @@ func _on_hitbox_area_entered(area: Area2D) -> void:
 	health -= 1
 	update_health_bar()
 	gun_sprite.visible = false
-	animated_sprite.play("HurtRight")
+	player_sprite.play("HurtRight")
 
 func _on_respawn_timer_timeout() -> void:
 	position = %RespawnPoint.position
@@ -408,11 +422,18 @@ func _on_respawn_timer_timeout() -> void:
 	animation_locked = false
 	has_died = false
 	health = health_max
+	o2 = o2_max
 	update_health_bar()
 
 func _on_fall_box_area_entered(area: Area2D) -> void:
 	killPlayer()
 
 func _on_o_2_timer_timeout() -> void:
-	o2 = o2 -1
+	o2 = o2 - 1
 	update_o2_bar()
+
+
+func _on_suffocate_timer_timeout() -> void:
+	health = health - 1
+	print(health)
+	update_health_bar()
