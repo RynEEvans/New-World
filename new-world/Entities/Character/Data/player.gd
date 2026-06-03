@@ -11,6 +11,7 @@ extends CharacterBody2D
 @onready var gun_sprite : AnimatedSprite2D = $GunArm #The Right Arm Sprite which holds the gun
 @onready var fuelbar = $CanvasLayer/PanelContainer/FuelBar #The Fuel Bar UI
 @onready var healthbar = $CanvasLayer/PanelContainer2/HealthBar #The Healthbar UI
+@onready var o2bar = $CanvasLayer/PanelContainer5/O2Bar #The O2 Bar
 @onready var headUI = $CanvasLayer/PanelContainer4/Head #The Head UI
 @onready var main = get_tree().get_root().get_node(".") #Lowkey forgot what this does, and why I have it
 @onready var bullet = load("res://Entities/Projectiles/Bullet/bullet.tscn") #The Bullet Sprite
@@ -56,7 +57,17 @@ var health_max = 10
 var health_min = 0
 var has_died : bool = false
 
+#O2 Stuff
+var o2 = 25
+var o2_max = 25
+var o2_min = 0
+
 func _ready():
+	health = 10
+	o2 = 25
+	update_health_bar()
+	update_o2_bar()
+	$Timers/o2_timer.start()
 	jetpack_fuel = 2
 	fuelbar.play("tankFull")
 	
@@ -216,6 +227,18 @@ func update_health_bar():
 	elif health == 1:
 		healthbar.play("1")
 		headUI.play("Low")
+
+#O2 and O2 Health Bar
+func update_o2_bar():
+	if o2 >= 25:
+		o2 = 25
+	for i in range(25):
+		if (o2 == i):
+			var i_text: String = str(i) # Converts i to String
+			o2bar.play(i_text)
+
+func o2_deplete():
+	$Timers/o2_timer.start()
 
 #Jump Handling
 func jump():
@@ -390,6 +413,6 @@ func _on_respawn_timer_timeout() -> void:
 func _on_fall_box_area_entered(area: Area2D) -> void:
 	killPlayer()
 
-
 func _on_o_2_timer_timeout() -> void:
-	pass # Replace with function body.
+	o2 = o2 -1
+	update_o2_bar()

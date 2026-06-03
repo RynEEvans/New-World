@@ -746,7 +746,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"GunWalkLeft",
-"speed": 15.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -778,7 +778,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"GunWalkRight",
-"speed": 15.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -1351,8 +1351,7 @@ offset = Vector2(-32, -32)
 [node name="GunArm" type="AnimatedSprite2D" parent="." unique_id=313007309]
 position = Vector2(-33, -32)
 sprite_frames = SubResource("SpriteFrames_ocp21")
-animation = &"ShootLeft"
-frame_progress = 0.94414204
+animation = &"GunWalkRight"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=838017947]
 visible = false
@@ -1405,6 +1404,9 @@ wait_time = 0.1
 [node name="gun_cooldown" type="Timer" parent="Timers" unique_id=1733602455]
 wait_time = 0.2
 one_shot = true
+
+[node name="o2_timer" type="Timer" parent="Timers" unique_id=268319419]
+wait_time = 4.0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=2038372543]
 
@@ -1508,4 +1510,5 @@ shape = SubResource("CircleShape2D_crn8y")
 [connection signal="timeout" from="Timers/coyote_timer" to="." method="_on_coyote_timer_timeout"]
 [connection signal="timeout" from="Timers/jump_buffer_timer" to="." method="_on_jump_buffer_timer_timeout"]
 [connection signal="timeout" from="Timers/gun_cooldown" to="." method="_on_gun_cooldown_timeout"]
+[connection signal="timeout" from="Timers/o2_timer" to="." method="_on_o_2_timer_timeout"]
 [connection signal="area_entered" from="fall_box" to="." method="_on_fall_box_area_entered"]
