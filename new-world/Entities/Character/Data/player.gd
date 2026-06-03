@@ -389,3 +389,7 @@ func _on_respawn_timer_timeout() -> void:
 
 func _on_fall_box_area_entered(area: Area2D) -> void:
 	killPlayer()
+
+
+func _on_o_2_timer_timeout() -> void:
+	pass # Replace with function body.
