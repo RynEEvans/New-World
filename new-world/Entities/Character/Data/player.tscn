@@ -13,6 +13,7 @@
 [ext_resource type="Texture2D" uid="uid://do1wcy8uitp5s" path="res://Entities/Character/Gun/SPcharGunArm2.png" id="8_fdsth"]
 [ext_resource type="Texture2D" uid="uid://bkep1mtyrs6rx" path="res://Entities/Character/Gun/gun.png" id="11_ur0x2"]
 [ext_resource type="Texture2D" uid="uid://snjjxtdnd3ux" path="res://UI/Health Bar/Art/hpOxyBarHP.png" id="12_fdsth"]
+[ext_resource type="Texture2D" uid="uid://wwvmji6j625x" path="res://UI/Health Bar/Art/hpEmpty.png" id="12_rlpf1"]
 [ext_resource type="Texture2D" uid="uid://da1bdef28xtdf" path="res://UI/Head/hpOxyBarHead.png" id="14_bt8lb"]
 [ext_resource type="Texture2D" uid="uid://coml3ichjlbsy" path="res://UI/Head/hpOxyBarHeadLow.png" id="15_32tbp"]
 [ext_resource type="Texture2D" uid="uid://f751axmbqvue" path="res://UI/O2 Bar/hpOxyBarO2.png" id="16_32tbp"]
@@ -999,6 +1000,10 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_an376"]
+atlas = ExtResource("12_rlpf1")
+region = Rect2(0, 0, 64, 32)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_ndeps"]
 atlas = ExtResource("12_fdsth")
 region = Rect2(576, 0, 64, 32)
@@ -1041,6 +1046,14 @@ region = Rect2(64, 0, 64, 32)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_5xm0m"]
 animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_an376")
+}],
+"loop": true,
+"name": &"0",
+"speed": 5.0
+}, {
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_ndeps")
@@ -1480,7 +1493,7 @@ offset = Vector2(-32, -32)
 [node name="GunArm" type="AnimatedSprite2D" parent="." unique_id=313007309]
 position = Vector2(-33, -32)
 sprite_frames = SubResource("SpriteFrames_ocp21")
-animation = &"GunWalkRight"
+animation = &"ShootRight"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=838017947]
 visible = false
@@ -1531,7 +1544,7 @@ wait_time = 0.05
 wait_time = 0.1
 
 [node name="gun_cooldown" type="Timer" parent="Timers" unique_id=1733602455]
-wait_time = 0.2
+wait_time = 0.5
 one_shot = true
 
 [node name="o2_timer" type="Timer" parent="Timers" unique_id=268319419]
@@ -1576,7 +1589,7 @@ metadata/_edit_use_anchors_ = true
 position = Vector2(100, 20.000061)
 scale = Vector2(3.64, 3.64)
 sprite_frames = SubResource("SpriteFrames_5xm0m")
-animation = &"5"
+animation = &"0"
 
 [node name="PanelContainer3" type="PanelContainer" parent="CanvasLayer" unique_id=75700819]
 self_modulate = Color(1, 1, 1, 0)

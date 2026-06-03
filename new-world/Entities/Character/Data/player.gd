@@ -48,8 +48,7 @@ var movement_locked : bool = false
 var spawnPos : Vector2
 var spawnRot : float
 var can_shoot: bool = true
-@export var mag_size : int = 10
-var max_mag_size : int = 10
+var is_shooting: bool = false
 
 #Health Stuff
 var health = 10
@@ -65,7 +64,7 @@ var suffocating = false
 
 func _ready():
 	health = 10
-	o2 = 10
+	o2 = 100
 	update_health_bar()
 	update_o2_bar()
 	$Timers/o2_timer.start()
@@ -155,6 +154,7 @@ func _physics_process(delta: float):
 func update_animation():
 	if(Input.is_action_pressed("shoot")):
 		shoot()
+		is_shooting = true
 	if not animation_locked || not movement_locked:
 		if health <= 0:
 			killPlayer()
@@ -166,22 +166,18 @@ func update_animation():
 					player_sprite.play("RunRight")
 					gun_sprite.visible = true
 					gun_sprite.z_index = 0
-					gun_sprite.play("GunWalkRight")
+					print(is_shooting)
+					if(is_shooting == false):
+						gun_sprite.play("GunWalkRight")
 				else:
 					facing_left = true
 					player_sprite.play("RunLeft")
 					gun_sprite.visible = true
 					gun_sprite.z_index = -1
-					gun_sprite.play("GunWalkLeft")
+					if(is_shooting == false):
+						gun_sprite.play("GunWalkLeft")
 			else:
 				if(Input.is_action_pressed("shoot")):
-					gun_sprite.visible = true
-					if(facing_left == false):
-						gun_sprite.z_index = 0
-						gun_sprite.play("ShootRight")
-					else:
-						gun_sprite.z_index = -1
-						gun_sprite.play("ShootLeft")
 					shoot()
 				else:
 					if (facing_left == true):
@@ -233,6 +229,9 @@ func update_health_bar():
 	elif health == 1:
 		healthbar.play("1")
 		headUI.play("Low")
+	elif health == 0:
+		healthbar.play("0")
+		headUI.play("Low")
 
 #O2 and O2 Health Bar
 func update_o2_bar():
@@ -246,13 +245,9 @@ func update_o2_bar():
 	if (o2 <= 0) && (suffocating == false):
 		$Timers/suffocate_timer.start()
 		suffocating = true
-		print(o2)
-		print("Suffocating")
 	elif (o2 >= 0):
 		suffocating = false
 		$Timers/suffocate_timer.stop()
-		print(o2)
-		print("Not Suffocating")
 
 #Jump Handling
 func jump():
@@ -337,19 +332,28 @@ func check_jetfuel():
 			
 #Shooting
 func shoot():
-	if can_shoot:
+	if can_shoot == true && o2 > 0 && is_shooting == false:
+		print(is_shooting)
+		gun_sprite.visible = true
+		if(facing_left == false):
+			gun_sprite.z_index = 0
+			gun_sprite.play("ShootRight")
+		else:
+			gun_sprite.z_index = -1
+			gun_sprite.play("ShootLeft")
 		can_shoot = false
 		var instance = bullet.instantiate()
 		instance.flip(false)
 		instance.dir = rotation
 		instance.spawnPos = Vector2(global_position.x - 43 ,global_position.y - 33)
 		instance.spawnRot = global_rotation
-		if player_sprite.flip_h == true:
+		if facing_left == true:
 			instance.flip(true)
 			instance.spawnPos = Vector2(global_position.x - 20,global_position.y - 33)
 		main.add_child.call_deferred(instance)
-		mag_size -= 1
-		check_mag_size(mag_size)
+		o2 -= 2
+		update_o2_bar()
+		$Timers/gun_cooldown.start()
 
 #Checking Magazine Size of the gun
 func check_mag_size(mag: int):
@@ -401,10 +405,7 @@ func _on_jump_buffer_timer_timeout() -> void:
 
 func _on_gun_cooldown_timeout() -> void:
 	can_shoot = true
-
-func _on_reload_timer_timeout() -> void:
-	mag_size = max_mag_size
-	can_shoot = true
+	is_shooting = false
 
 func _on_hitbox_body_entered(body: Node2D) -> void:
 	pass
